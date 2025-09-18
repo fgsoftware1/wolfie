@@ -2,22 +2,22 @@ module wolfie;
 
 enum Irq : const inline int
 {
-    PIT = 32,
-    KEYBOARD = 33,
-    CASCADE = 34,
-    COM2 = 35,
-    COM1 = 36,
-    LPT2 = 37,
-    FLOPPY = 38,
-    LPT1_SPURIOUS = 39,
-    RTC = 40,
-    PERIPHERAL_1 = 41,
-    PERIPHERAL_2 = 42,
-    PERIPHERAL_3 = 43,
-    MOUSE = 44,
-    FPU = 45,
-    ATA_PRIMARY = 46,
-    ATA_SECONDARY = 47,
+    PIT = 0,
+    KEYBOARD = 1,
+    CASCADE = 2,
+    COM2 = 3,
+    COM1 = 4,
+    LPT2 = 5,
+    FLOPPY = 6,
+    LPT1_SPURIOUS = 7,
+    RTC = 8,
+    PERIPHERAL_1 = 9,
+    PERIPHERAL_2 = 10,
+    PERIPHERAL_3 = 11,
+    MOUSE = 12,
+    FPU = 13,
+    ATA_PRIMARY = 14,
+    ATA_SECONDARY = 15,
 }
 
 

@@ -31,18 +31,8 @@ fn void init_pic() {
     outportb(PIC_MASTER_DATA, master);
     outportb(PIC_SLAVE_DATA, slave);
 
-    // Mask all IRQs except PIT (IRQ0)
-    outportb(PIC_MASTER_DATA, 0xFE);  // 0xFE = 11111110 (unmask IRQ0)
-    outportb(PIC_SLAVE_DATA, 0xFF);   // Mask all slave IRQs
-    
-    // Debug: Read back the mask registers
-    char master_mask = inportb(PIC_MASTER_DATA);
-    char slave_mask = inportb(PIC_SLAVE_DATA);
-    vga_puts("PIC Master mask: ");
-    vga_puthex(master_mask);
-    vga_puts("\nPIC Slave mask: ");
-    vga_puthex(slave_mask);
-    vga_puts("\n");
+    outportb(PIC_MASTER_DATA, 0xFF);  
+    outportb(PIC_SLAVE_DATA, 0xFF);  
 }
 
 
@@ -125,4 +115,5 @@ fn void probe_pic() {
     vga_puthex(isr_master);
     vga_puts("\nPIC Slave ISR: ");
     vga_puthex(isr_slave);
+    vga_puts("\n");
 }

@@ -3,28 +3,27 @@
 irq_common_stub:
     pusha
     
-    mov %ds, %ax
-    push %eax
+    movw %ds, %ax
+    pushl %eax
     
-    mov $0x10, %ax
-    mov %ax, %ds
-    mov %ax, %es
-    mov %ax, %fs
-    mov %ax, %gs
+    movw $0x10, %ax
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
     
-    push %esp
+    pushl %esp
     call isr_irq_handler
-    
-    add $4, %esp
-    
-    pop %eax
-    mov %ax, %ds
-    mov %ax, %es
-    mov %ax, %fs
-    mov %ax, %gs
+    popl %esp
+    popl %ebx
+
+    movw %bx, %ds
+    movw %bx, %es
+    movw %bx, %fs
+    movw %bx, %gs
     
     popa
-    add $8, %esp  
+    addl $0x8, %esp  
     iret
 
 .macro IRQ num vec

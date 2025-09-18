@@ -52,8 +52,9 @@ fn void isr_register_exception(int n, Exception handler)
 
 fn void isr_register_irq(Irq n, Isr handler)
 {
-    if (n >= Irq.PIT && n <= Irq.ATA_SECONDARY) {
+    if (n >= Irq.PIT && n < Irq.ATA_SECONDARY) {
         isr_handlers[n] = handler;
+        pic_unmask((char)n);
         vga_puts("Registered IRQ handler for IRQ ");
         vga_puthex(n);
         vga_puts(" -> ");
@@ -76,10 +77,8 @@ fn void exception_dispatch(uint n){
 }
 
 fn void irq_dispatch(uint n, CPURegs* regs){
-    // Convert IRQ number (32-47) to IRQ index (0-15)
-    uint irq = n - 32;
-    if (irq < 15 && isr_handlers[irq]) {
-        isr_handlers[irq](regs);
+    if (n < 15 && isr_handlers[n]) {
+        isr_handlers[n](regs);
     } else {
         panic("Unhandled IRQ!\n");
         halt();
@@ -100,10 +99,8 @@ fn void isr_exception_handler(CPURegs* regs) @export("isr_exception_handler") @n
 
 fn void isr_irq_handler(CPURegs* regs) @export("isr_irq_handler")
 {    
-    if(regs.int_no >= 32 && regs.int_no < 48){
-        Isr handler = isr_handlers[regs.int_no];
-        if(handler){
-            handler(regs);
-        }
+    Isr handler = isr_handlers[regs.int_no];
+    if(handler){
+        handler(regs);
     }
 }

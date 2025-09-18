@@ -20,15 +20,25 @@ halt:
 .global inportb
 .type inportb, @function
 inportb:
-    movl 4(%esp), %edx
+    pushl %ebp
+    movl %esp, %ebp
+
+    movl 8(%ebp), %edx
     xor %eax, %eax
     inb %dx, %al
+
+    leave
     ret
 
 .global outportb
 .type outportb, @function
 outportb:
-    mov 4(%esp), %edx
-    mov 8(%esp), %eax
-    outb %al, %dx
+    pushl %ebp
+    movl  %esp, %ebp
+
+    movl  8(%ebp), %edx   
+    movl 12(%ebp), %eax   
+    outb  %al, %dx        
+
+    leave
     ret

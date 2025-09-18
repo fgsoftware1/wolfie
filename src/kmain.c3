@@ -10,19 +10,16 @@ fn void kmain(uint magic, uint multiboot_info) @export("kmain")
     vga_puts("WolfieOS Booting...\n");
 
     init_gdt();
-    init_pic();
     init_idt();
-    
-    // Register exception handlers
+    init_pic();
     isr_register_exception(0, &divide_by_zero_exception_handler);
     isr_register_exception(6, &invalid_opcode_exception_handler);
     isr_register_exception(14, &page_fault_exception_handler);
+    isr_register_exception(20, &virtualization_exception_handler);
     isr_register_irq(Irq.PIT, &pit_handler);  
-    
-    // Enable interrupts
     enable_interrupts();
+    probe_pic();
 
-    // Main kernel loop
     while(true) {
         halt();
     }
