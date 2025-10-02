@@ -1,3 +1,5 @@
 build
 isodir/boot/kernel.elf
-wolfieOS.iso
+
+*.iso
+*.log

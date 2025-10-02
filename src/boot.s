@@ -13,8 +13,8 @@ end_tag_end:
 multiboot_hdr_end:
 
 .section .text
-.global _start 
 
+.global _start 
 _start:
     xorl %ebp, %ebp
     movl $stack_top, %esp
