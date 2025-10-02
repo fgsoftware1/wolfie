@@ -17,4 +17,4 @@ set obj_files (find build -type f -name "*.o")
 echo "--LD LINKING $obj_files"
 ld -T src/linker.ld -m elf_i386 -o kernel.elf $obj_files
 mv kernel.elf isodir/boot/
-grub2-mkrescue -o wolfieOS.iso isodir
+grub-mkrescue -o wolfieOS.iso isodir

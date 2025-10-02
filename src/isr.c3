@@ -15,7 +15,7 @@ struct CPURegs @packed
     uint eip, cs, eflags, useresp, ss;
 }
 
-alias Exception = fn void();
+alias Exception = fn void(CPURegs*);
 alias Isr = fn void(CPURegs*);
 
 Exception[32] exception_handlers;
@@ -67,9 +67,9 @@ fn void isr_register_irq(Irq n, Isr handler)
     }
 }
 
-fn void exception_dispatch(uint n){
+fn void exception_dispatch(uint n, CPURegs* regs){
     if (n < 32 && exception_handlers[n]) {
-        exception_handlers[n]();
+        exception_handlers[n](regs);
     } else {
         panic("Unhandled exception!\n");
         halt();
@@ -94,13 +94,18 @@ fn void isr_exception_handler(CPURegs* regs) @export("isr_exception_handler") @n
     } else {
         vga_puts("Unknown exception!\n");
     }
-    halt();
+    exception_dispatch(regs.int_no, regs);
 }
 
 fn void isr_irq_handler(CPURegs* regs) @export("isr_irq_handler")
 {    
-    Isr handler = isr_handlers[regs.int_no];
-    if(handler){
-        handler(regs);
+    uint irq = regs.int_no - 32;
+    if (irq < 15 && isr_handlers[irq]) {
+        isr_handlers[irq](regs);
+    } else {
+        vga_puts("Unhandled IRQ: ");
+        vga_puthex(irq);
+        vga_puts("\n");
+        halt();
     }
 }
