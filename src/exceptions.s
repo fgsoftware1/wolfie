@@ -36,11 +36,11 @@
 
 exception_handler:
     pusha
-    xorl %eax, %eax
+    xorl    %eax, %eax
     movw    %ds, %ax
     pushl   %eax
 
-    pushl %esp
+    pushl   %esp
 
     movl    $0x10, %eax
     movw    %ax, %ds
@@ -48,14 +48,14 @@ exception_handler:
     movw    %ax, %fs
     movw    %ax, %gs
 
-    call   isr_exception_handler
+    call    isr_exception_handler
 
     popl    %eax
-    popl   %ebx
-    movw   %bx, %ds
-    movw   %bx, %es
-    movw   %bx, %fs
-    movw   %bx, %gs
+    popl    %ebx
+    movw    %bx, %ds
+    movw    %bx, %es
+    movw    %bx, %fs
+    movw    %bx, %gs
 
     popa
     addl    $0x8, %esp
@@ -63,23 +63,24 @@ exception_handler:
     sti
     iret
 
+#TODO: create macros for excepions for easier readability and maintainability 
 exception_0:
     cli
-    pushl  $0
-    pushl  $0
-    jmp    exception_handler
+    pushl   $0
+    pushl   $0
+    jmp     exception_handler
 
 exception_1:
     cli
-    pushl  $0
-    pushl  $1
-    jmp    exception_handler
+    pushl   $0
+    pushl   $1
+    jmp     exception_handler
 
 exception_2:
     cli
-    pushl  $0
-    pushl  $2
-    jmp    exception_handler
+    pushl   $0
+    pushl   $2
+    jmp     exception_handler
 
 exception_3:
     cli
@@ -118,139 +119,139 @@ exception_8:
 
 exception_9:
     cli
-    pushl  $0
-    pushl  $9
-    jmp    exception_handler
+    pushl   $0
+    pushl   $9
+    jmp     exception_handler
 
 exception_10:
     cli
-    pushl  $10
-    jmp    exception_handler
+    pushl   $10
+    jmp     exception_handler
 
 exception_11:
     cli
-    pushl  $11
-    jmp    exception_handler
+    pushl   $11
+    jmp     exception_handler
 
 exception_12:
     cli
-    pushl  $12
-    jmp    exception_handler
+    pushl   $12
+    jmp     exception_handler
 
 exception_13:
     cli
-    pushl  $13
-    jmp    exception_handler
+    pushl   $13
+    jmp     exception_handler
 
 exception_14:
     cli
-    pushl  $14
-    jmp    exception_handler
+    pushl   $14
+    jmp     exception_handler
 
 exception_15:
     cli
-    pushl  $0
-    pushl  $15
-    jmp    exception_handler
+    pushl   $0
+    pushl   $15
+    jmp     exception_handler
 
 exception_16:
     cli
-    pushl  $0
-    pushl  $16
-    jmp    exception_handler
+    pushl   $0
+    pushl   $16
+    jmp     exception_handler
 
 exception_17:
     cli
-    pushl  $0
-    pushl  $17
-    jmp    exception_handler
+    pushl   $0
+    pushl   $17
+    jmp     exception_handler
 
 exception_18:
     cli
-    pushl  $0
-    pushl  $18
-    jmp    exception_handler
+    pushl   $0
+    pushl   $18
+    jmp     exception_handler
 
 exception_19:
     cli
-    pushl  $0
-    pushl  $19
-    jmp    exception_handler
+    pushl   $0
+    pushl   $19
+    jmp     exception_handler
 
 exception_20:
     cli
-    pushl  $0
-    pushl  $20
-    jmp    exception_handler
+    pushl   $0
+    pushl   $20
+    jmp     exception_handler
 
 exception_21:
     cli
-    pushl  $0
-    pushl  $21
-    jmp    exception_handler
+    pushl   $0
+    pushl   $21
+    jmp     exception_handler
 
 exception_22:
     cli
-    pushl  $0
-    pushl  $22
-    jmp    exception_handler
+    pushl   $0
+    pushl   $22
+    jmp     exception_handler
 
 exception_23:
     cli
-    pushl  $0
-    pushl  $23
-    jmp    exception_handler
+    pushl   $0
+    pushl   $23
+    jmp     exception_handler
 
 exception_24:
     cli
-    pushl  $0
-    pushl  $24
-    jmp    exception_handler
+    pushl   $0
+    pushl   $24
+    jmp     exception_handler
 
 exception_25:
     cli
-    pushl  $0
-    pushl  $25
-    jmp    exception_handler
+    pushl   $0
+    pushl   $25
+    jmp     exception_handler
 
 exception_26:
     cli
-    pushl  $0
-    pushl  $26
-    jmp    exception_handler
+    pushl   $0
+    pushl   $26
+    jmp     exception_handler
 
 exception_27:
     cli
-    pushl  $0
-    pushl  $27
-    jmp    exception_handler
+    pushl   $0
+    pushl   $27
+    jmp     exception_handler
 
 exception_28:
     cli
-    pushl  $0
-    pushl  $28
-    jmp    exception_handler
+    pushl   $0
+    pushl   $28
+    jmp     exception_handler
 
 exception_29:
     cli
-    pushl  $0
-    pushl  $29
-    jmp    exception_handler
+    pushl   $0
+    pushl   $29
+    jmp     exception_handler
 
 exception_30:
     cli
-    pushl  $0
-    pushl  $30
-    jmp    exception_handler
+    pushl   $0
+    pushl   $30
+    jmp     exception_handler
 
 exception_31:
     cli
-    pushl  $0
-    pushl  $31
-    jmp    exception_handler
+    pushl   $0
+    pushl   $31
+    jmp     exception_handler
 
 exception_128:
     cli
-    pushl  $0
-    pushl  $128
-    jmp    exception_handler
+    pushl   $0
+    pushl   $128
+    jmp     exception_handler

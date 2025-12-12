@@ -20,12 +20,12 @@ halt:
 .global inportb
 .type inportb, @function
 inportb:
-    pushl %ebp
-    movl %esp, %ebp
+    pushl   %ebp
+    movl    %esp, %ebp
 
-    movl 8(%ebp), %edx
-    xor %eax, %eax
-    inb %dx, %al
+    movl    8(%ebp), %edx
+    xor     %eax, %eax
+    inb     %dx, %al
 
     leave
     ret
@@ -33,12 +33,12 @@ inportb:
 .global outportb
 .type outportb, @function
 outportb:
-    pushl %ebp
-    movl  %esp, %ebp
+    pushl   %ebp
+    movl    %esp, %ebp
 
-    movl  8(%ebp), %edx   
-    movl 12(%ebp), %eax   
-    outb  %al, %dx        
+    movl    8(%ebp), %edx   
+    movl    12(%ebp), %eax   
+    outb    %al, %dx        
 
     leave
     ret
