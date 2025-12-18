@@ -3,3 +3,4 @@ isodir/boot/kernel.elf
 
 *.iso
 *.log
+.idea
