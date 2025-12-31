@@ -1,3 +1,5 @@
+# For tags structure info refer to 
+# https://www.gnu.org/software/grub/manual/multiboot2/multiboot.html#Header-tags
 .section .multiboot 
 .align 8
 multiboot_hdr_start:
@@ -5,6 +7,16 @@ multiboot_hdr_start:
     .long   0
     .long   multiboot_hdr_end - multiboot_hdr_start
     .long   -(0xE85250D6 + 0 + (multiboot_hdr_end - multiboot_hdr_start))
+    .align 8
+framebuffer_tag_start:
+    .word 5
+    .word 0 
+    .long framebuffer_tag_end - framebuffer_tag_start
+    .long 1024
+    .long 768
+    .long 32
+framebuffer_tag_end:
+    .align 8
 end_tag_start:
     .word   0
     .word   0
@@ -25,6 +37,7 @@ _start:
 
 hang:
     cli
+    hlt
     jmp hang
 
 .section .bss
