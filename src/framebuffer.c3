@@ -26,14 +26,14 @@ fn void FrameBuffer.fill(&self, uint rgb) {
 }
 
 fn void FrameBuffer.putChar(&self, PSF2Header* hdr, uint cx, uint cy, char c, uint fg, uint bg){
-	char* glyph = psf2GetGlyph(hdr, (char)c);
+	char* glyph = psf2GetGlyph(hdr, (uint)c);
 	uint pw = hdr.width;
 	uint ph = hdr.height;
 	uint bpr = (pw + 7) / 8; // bytes per glyph row
 
 	for(uint row = 0; row < ph; row++){
 		for(uint col = 0; col < pw; col++){
-			uint byte = (uint)((char)(glyph[row * bpr + col / 8]));
+			uint byte = (uint)((glyph[row * bpr + col / 8]));
 			bool set  = ((byte >> (7 - col % 8)) & 1u) != 0;
 			self.putPixel(cx * pw + col, cy * ph + row, set ? fg : bg);
 		}

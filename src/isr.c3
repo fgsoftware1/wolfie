@@ -34,11 +34,11 @@ fn void isr_register_exception(int n, Exception handler)
 {
     if (n >= 0 && n < 32) {
         exception_handlers[n] = handler;
-        vga_puts("Registered exception handler for exception ");
-        vga_puthex(n);
-        vga_puts(" -> ");
-        vga_puthex((uint)handler);
-        vga_puts("\n");
+        klog(&g_tty, "[IDT] exception 0x");
+        klog_hex(&g_tty, (uint)n);
+        klog(&g_tty, " -> 0x");
+        klog_hex(&g_tty, (uint)handler);
+        klog(&g_tty, "\n");
     }
 }
 
@@ -47,15 +47,13 @@ fn void isr_register_irq(Irq n, Isr handler)
     if (n >= Irq.PIT && n <= Irq.ATA_SECONDARY) {
         isr_handlers[n] = handler;
         pic_unmask((char)n);
-        vga_puts("Registered IRQ handler for IRQ ");
-        vga_puthex(n);
-        vga_puts(" -> ");
-        vga_puthex((uint)handler);
-        vga_puts("\n");
-    } else {
-        vga_puts("Invalid IRQ number: ");
-        vga_puthex(n);
-        vga_puts("\n");
+        isr_handlers[n] = handler;
+        pic_unmask((char)n);
+        klog(&g_tty, "[IRQ] 0x");
+        klog_hex(&g_tty, (uint)n);
+        klog(&g_tty, " -> 0x");
+        klog_hex(&g_tty, (uint)handler);
+        klog(&g_tty, "\n");
     }
 }
 

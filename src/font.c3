@@ -18,7 +18,7 @@ fn char* psf2GetGlyph(PSF2Header* header, uint c) {
 	if (c >= header.num_glyphs) {
 		c = '?';
 	}
-	char* glyphs = ((char*)header + header.header_size);
+	char* glyphs = (char*)((uptr)header + (uptr)header.header_size);
 	return (glyphs + c * header.bytes_per_glyph);
 }
 

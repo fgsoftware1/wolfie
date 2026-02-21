@@ -62,3 +62,17 @@ fn void init_idt(){
     idt_set_entry(20,(uint)&exception_20, (char)INTERRUPT_TRAP);
     idt_set_entry(32, (uint)&irq_0, (char)INTERRUPT_GATE);
 }
+
+fn void idt_dump(Tty* tty) {
+    e9_puts("idt_dump start\n");
+    for (uint i = 0; i < 256; i++) {
+        IDTEntry* e = &idt[i];
+        uint addr = ((uint)e.base_high << 16) | (uint)e.base_low;
+        if (addr == 0) continue;
+        e9_puts("entry="); e9_puthex(i);
+        e9(' ');
+        e9_puthex(addr);
+        e9('\n');
+    }
+    e9_puts("idt_dump done\n");
+}
