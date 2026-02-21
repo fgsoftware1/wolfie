@@ -1,7 +1,6 @@
 build
-isodir/boot/kernel.elf
 
+*.o
+*.elf
 *.iso
 *.log
-.idea
-obj

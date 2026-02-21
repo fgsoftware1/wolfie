@@ -1,25 +1,17 @@
 module wolfie;
 
-struct CPURegs @packed
-{
-    uint ds;
-    uint eax;
-    uint ecx;
-    uint edx;
-    uint ebx;
-    uint esp;
-    uint ebp;
-    uint esi;
-    uint edi;
-    uint int_no, err_code;
-    uint eip, cs, eflags, useresp, ss;
+struct CPURegs @packed {
+    uint ds;                                    	// pushed manually
+    uint edi, esi, ebp, esp, ebx, edx, ecx, eax; 	// pusha order (reversed)
+    uint int_no, err_code;                      	// pushed by stub
+    uint eip, cs, eflags, useresp, ss;          	// pushed by CPU
 }
 
 alias Exception = fn void(CPURegs*);
 alias Isr = fn void(CPURegs*);
 
 Exception[32] exception_handlers;
-Isr[15] isr_handlers;
+Isr[16] isr_handlers;
 
 fn void print_registers(CPURegs* regs)
 {
@@ -52,7 +44,7 @@ fn void isr_register_exception(int n, Exception handler)
 
 fn void isr_register_irq(Irq n, Isr handler)
 {
-    if (n >= Irq.PIT && n < Irq.ATA_SECONDARY) {
+    if (n >= Irq.PIT && n <= Irq.ATA_SECONDARY) {
         isr_handlers[n] = handler;
         pic_unmask((char)n);
         vga_puts("Registered IRQ handler for IRQ ");
@@ -108,4 +100,6 @@ fn void isr_irq_handler(CPURegs* regs) @export("isr_irq_handler")
         vga_puts("\n");
         halt();
     }
+
+	pic_eoi((char)irq);
 }

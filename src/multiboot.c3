@@ -1,20 +1,26 @@
 module wolfie;
 
-enum TagType : const inline int
+const uint MULTIBOOT_BOOT_MAGIC = 0x36d76289;
+
+enum TagType : const inline uint
 {
     END = 0,
     BOOTLOADER_NAME = 2,
     FRAMEBUFFER = 8,
 }
 
-struct MultibootTag
-{
+struct MultibootTag @packed {
 	TagType type;
 	uint size;
 }
 
-struct BootloaderNameTag {
-	MultibootTag tag;
+struct MultibootHeader @packed {
+	uint size;
+	uint reserved;
+}
+
+struct BootloaderNameTag @packed {
+	MultibootTag* tag;
 	char[*] name;
 }
 
@@ -25,7 +31,7 @@ enum FramebufferType : const inline char
     EGA_TEXT = 2,
 }
 
-struct FramebufferTag {
+struct FramebufferTag @packed {
 	MultibootTag tag;
 	ulong addr;
 	uint pitch;
@@ -33,23 +39,18 @@ struct FramebufferTag {
   	uint height;
   	char bpp;
   	FramebufferType type;
-  	char reserved;
-  	union color_type{
-    	struct indexed {
-      		uint palette_num_colors;
-      		struct rgb {
-        		char red;
-				char green;
-				char blue;
-			}
-		} 
-		struct rgb {
-			char red_field_position;
-			char red_mask_size;
-			char green_field_position;
-			char green_mask_size;
-			char blue_field_position;
-			char blue_mask_size;
-		}
-	}
+  	ushort reserved;
+}
+
+fn MultibootTag* multibootFindTag(MultibootHeader* mbi, TagType want) {
+    uptr p   = (uptr)mbi + 8;
+    uptr end = (uptr)mbi + mbi.size;
+
+    while (p < end) {
+        MultibootTag* tag = (MultibootTag*)p;
+        if (tag.type == TagType.END) break;
+        if (tag.type == want) return tag;
+        p += (tag.size + 7) / 8 * 8;
+    }
+    return null;
 }
