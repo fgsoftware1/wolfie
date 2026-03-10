@@ -29,10 +29,10 @@ fn void kmain(uint magic, uint info) @export("kmain") {
     klog("[wolfie] booting...\n");
     mmap_init(info);
 
-    init_gdt();  klog("[GDT] ok\n");
-    init_idt();  klog("[IDT] ok\n");
-    init_pic();  klog("[PIC] ok\n");
-    init_pit();  klog("[PIT] ok\n");
+    init_gdt();  
+    init_idt();  
+    init_pic();  
+    init_pit(); 
 
     isr_register_exception(0,  &divide_by_zero_exception_handler);
     isr_register_exception(6,  &invalid_opcode_exception_handler);

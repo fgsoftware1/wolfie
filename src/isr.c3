@@ -34,11 +34,11 @@ fn void isr_register_exception(int n, Exception handler)
 {
     if (n >= 0 && n < 32) {
         exception_handlers[n] = handler;
-        klog(&g_tty, "[IDT] exception 0x");
-        klog_hex(&g_tty, (uint)n);
-        klog(&g_tty, " -> 0x");
-        klog_hex(&g_tty, (uint)handler);
-        klog(&g_tty, "\n");
+        klog("[IDT] exception ");
+        klog_hex((uint)n);
+        klog(" -> ");
+        klog_hex((uint)handler);
+        klog("\n");
     }
 }
 
@@ -49,11 +49,11 @@ fn void isr_register_irq(Irq n, Isr handler)
         pic_unmask((char)n);
         isr_handlers[n] = handler;
         pic_unmask((char)n);
-        klog(&g_tty, "[IRQ] 0x");
-        klog_hex(&g_tty, (uint)n);
-        klog(&g_tty, " -> 0x");
-        klog_hex(&g_tty, (uint)handler);
-        klog(&g_tty, "\n");
+        klog("[IRQ] ");
+        klog_hex((uint)n);
+        klog(" -> ");
+        klog_hex((uint)handler);
+        klog("\n");
     }
 }
 

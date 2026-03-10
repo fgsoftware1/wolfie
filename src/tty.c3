@@ -37,18 +37,21 @@ fn void Tty.scroll(&self) {
 }
 
 fn void Tty.putChar(&self, char c) {
-    if (c == '\n') {
-        self.cx = 0;
+	switch (c)
+	{
+	case '\n':
+		self.cx = 0;
         self.cy++;
-    } else if (c == '\r') {
-        self.cx = 0;
-    } else if (c == '\b') {
-        if (self.cx > 0) self.cx--;
-    } else {
-        self.fb.putChar(self.font, self.cx, self.cy, c, self.fg, self.bg);
+	case '\r':
+		self.cx = 0;
+	case '\b':
+		if (self.cx > 0) self.cx--;
+	default:
+		self.fb.putChar(self.font, self.cx, self.cy, c, self.fg, self.bg);
         self.cx++;
         if (self.cx >= self.cols) { self.cx = 0; self.cy++; }
-    }
+	}
+
     if (self.cy >= self.rows) { self.scroll(); self.cy = self.rows - 1; }
 }
 

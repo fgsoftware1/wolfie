@@ -5,14 +5,14 @@ wolfieOS
 How to build
 ============
 
-This will run qemu in debug mode and also create qemu log
-
 ..  code-block:: 
 
     fish build.fish    
 
 Debugging
 =========
+
+This will run qemu in debug mode and also create qemu log
 
 ..  code-block:: 
 
