@@ -15,26 +15,41 @@ fn void dmsg_write(char* s) {
     }
 }
 
-fn void dmsg_dump(Tty* tty) {
+fn void dmsg_dump() {
     uint start = dmsg_head >= DMSG_SIZE ? dmsg_head % DMSG_SIZE : 0;
     for (uint i = 0; i < dmsg_len; i++) {
-        tty.putChar(dmsg_buf[(start + i) % DMSG_SIZE]);
+        g_tty.putChar(dmsg_buf[(start + i) % DMSG_SIZE]);
     }
 }
 
-fn void klog(Tty* tty, char* s) {
+fn void klog(char* s) {
     dmsg_write(s);
-    tty.puts(s);
+    g_tty.puts(s);
 }
 
-fn void klog_hex(Tty* tty, uint v) {
-    char[11] buf;
-    buf[0] = '0'; buf[1] = 'x';
-    for (int i = 7; i >= 0; i--) {
+fn void klog_hex_raw(uint v, int digits) {
+    char[9] buf;
+    for (int i = digits - 1; i >= 0; i--) {
         char n = (char)(v & 0xF);
-        buf[2 + i] = n < 10 ? '0' + n : 'A' + n - 10;
+        buf[i] = n < 10 ? '0' + n : 'a' + n - 10;
         v >>= 4;
     }
-    buf[10] = '\0';
-    klog(tty, &buf);
+    buf[digits] = '\0';
+    klog(&buf);
+}
+
+fn void klog_hex(uint v) {
+    klog("0x");
+    klog_hex_raw(v, 8);
+}
+
+fn void klog_hex8(char v) {
+    klog("0x");
+    klog_hex_raw((uint)v, 2);
+}
+
+fn void klog_hex64(ulong v) {
+    klog("0x");
+    klog_hex_raw((uint)(v >> 32), 8);
+    klog_hex_raw((uint)(v & 0xFFFFFFFF), 8);
 }

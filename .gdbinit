@@ -1,3 +1,5 @@
+target remote localhost:1234
+symbol-file isodir/boot/kernel.elf
 set architecture i386
-target remote :1234
+break _start
 continue
