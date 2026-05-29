@@ -2,9 +2,30 @@ module wolfie;
 
 const uint DMSG_SIZE = 4096;
 
+constdef ConsoleMode : inline char
+{
+    DEBUG_ONLY = 0,
+    FRAMEBUFFER = 1,
+    VGA = 2,
+}
+
 char[DMSG_SIZE] dmsg_buf;
 uint dmsg_head = 0;
 uint dmsg_len  = 0;
+ConsoleMode console_mode = ConsoleMode.DEBUG_ONLY;
+
+fn void console_init_framebuffer() {
+    console_mode = ConsoleMode.FRAMEBUFFER;
+}
+
+fn void console_init_vga() {
+    vga_clear(WHITE, BLACK);
+    console_mode = ConsoleMode.VGA;
+}
+
+fn void console_init_debug_only() {
+    console_mode = ConsoleMode.DEBUG_ONLY;
+}
 
 fn void dmsg_write(char* s) {
     while (s[0] != '\0') {
@@ -18,13 +39,34 @@ fn void dmsg_write(char* s) {
 fn void dmsg_dump() {
     uint start = dmsg_head >= DMSG_SIZE ? dmsg_head % DMSG_SIZE : 0;
     for (uint i = 0; i < dmsg_len; i++) {
-        g_tty.putChar(dmsg_buf[(start + i) % DMSG_SIZE]);
+        console_putc(dmsg_buf[(start + i) % DMSG_SIZE]);
+    }
+}
+
+fn void console_putc(char c) {
+    e9(c);
+
+    if (console_mode == ConsoleMode.FRAMEBUFFER) {
+        g_tty.putChar(c);
+        return;
+    }
+
+    if (console_mode == ConsoleMode.VGA) {
+        vga_putc(c);
+        return;
+    }
+}
+
+fn void console_puts(char* s) {
+    while (s[0] != '\0') {
+        console_putc(s[0]);
+        s++;
     }
 }
 
 fn void klog(char* s) {
     dmsg_write(s);
-    g_tty.puts(s);
+    console_puts(s);
 }
 
 fn void klog_hex_raw(uint v, int digits) {

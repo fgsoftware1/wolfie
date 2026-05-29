@@ -1,6 +1,6 @@
 module wolfie;
 
-enum VGAColor : const inline char
+constdef VGAColor : inline char
 {
     BLACK = 0,
     BLUE = 1,
@@ -136,9 +136,11 @@ fn void vga_puthex(uint num)
 }
 
 fn void panic(char* str){
-    vga_clear(RED, BLACK);
-    vga_puts("KERNEL PANIC: \n");
-    vga_puts(str);
-    vga_puts("\n");
+    if (console_mode == ConsoleMode.VGA) {
+        vga_clear(RED, BLACK);
+    }
+    klog("KERNEL PANIC:\n");
+    klog(str);
+    klog("\n");
     while(true) halt();
 }

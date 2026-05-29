@@ -2,7 +2,7 @@ module wolfie;
 
 const uint MULTIBOOT_BOOT_MAGIC = 0x36d76289;
 
-enum TagType : const inline uint
+constdef TagType : inline uint
 {
 	END = 0,
 	BOOTLOADER_NAME = 2,
@@ -28,7 +28,7 @@ struct BootloaderNameTag @packed
 	char[*] name;
 }
 
-enum MMAPType : const inline uint
+constdef MMAPType : inline uint
 {
 	USABLE = 1,
 	RESERVED = 2,
@@ -53,7 +53,7 @@ struct MMAPTag @packed
 	MMAPEntry[*] entries;
 }
 
-enum FramebufferType : const inline char
+constdef FramebufferType : inline char
 {
 	INDEXED = 0,
 	RGB = 1,
@@ -72,25 +72,27 @@ struct FramebufferTag @packed
 	ushort reserved;
 }
 
-fn MultibootTag* multibootFindTag(MultibootHeader* mbi, TagType want)
+fn MultibootTag* mb2_find_tag(MultibootHeader* mbi, TagType wanted)
 {
-	uptr p = (uptr)mbi + 8;
-	uptr end = (uptr)mbi + mbi.size;
+    uptr start = (uptr)mbi + MultibootHeader.sizeof;   // skip 8-byte fixed header
+    uptr end   = (uptr)mbi + mbi.size;
 
-	while (p < end)
-	{
-		MultibootTag* tag = (MultibootTag*)p;
-		if (tag.type == TagType.END) break;
-		if (tag.type == want) return tag;
-		p += (tag.size + 7) / 8 * 8;
-	}
-	return null;
+    while (start < end) {
+        MultibootTag* tag = (MultibootTag*)start;
+
+        if (tag.type == (uint)TagType.END) break;
+        if (tag.type == (uint)wanted) return tag;
+
+        start += ((uptr)tag.size + 7) & -8;          	// round up to 8-byte boundary
+    }
+
+    return null;
 }
 
 fn void mmap_init(uint mbi)
 {
-	MultibootTag* raw_mmap = multibootFindTag(
-		(MultibootHeader*)mbi,
+	MultibootTag* raw_mmap = mb2_find_tag(
+		(MultibootHeader*)(uptr)mbi,
 		TagType.MMAP_TAG
 	);
 

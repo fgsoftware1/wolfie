@@ -13,7 +13,7 @@ fn void invalid_opcode_exception_handler(CPURegs* regs)
     vga_puts("Invalid opcode exception at EIP: ");
     vga_puthex(regs.eip);
     vga_puts("\n");
-    while(true) halt();
+    while (true) halt();
 }
 
 fn void page_fault_exception_handler(CPURegs* regs)
@@ -21,6 +21,10 @@ fn void page_fault_exception_handler(CPURegs* regs)
     uint addr = read_cr2();
     vga_puts("Page Fault! CR2=");
     vga_puthex(addr);
+    vga_puts(" EIP=");
+    vga_puthex(regs.eip);
+    vga_puts(" ERR=");
+    vga_puthex(regs.err_code);
     vga_puts("\n");
     panic("Page fault exception occurred!");
 }

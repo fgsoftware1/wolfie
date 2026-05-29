@@ -1,6 +1,6 @@
 module wolfie;
 
-enum Irq : const inline int
+constdef Irq : inline int
 {
     PIT = 0,
     KEYBOARD = 1,
