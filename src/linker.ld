@@ -3,7 +3,7 @@ OUTPUT_FORMAT("elf32-i386")
 
 SECTIONS
 {
-    . = 2M;
+    . = 1M;
 
     .multiboot ALIGN(4K) : {
         KEEP(*(.multiboot))

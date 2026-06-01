@@ -5,9 +5,7 @@
 load_idt:
     pushl   %ebp
     movl    %esp, %ebp
-
     movl    8(%ebp), %eax
     lidt    (%eax)
-
     leave
     ret
