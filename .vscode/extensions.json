@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "c3.vscode-c3",
-        "gruntfuggly.todo-tree"
+        "gruntfuggly.todo-tree",
+        "aaron-bond.better-comments"
     ]
 }

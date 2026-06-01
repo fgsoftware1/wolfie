@@ -1,63 +1,65 @@
 module wolfie;
 
-Tty g_tty;
-FrameBuffer g_fb;
-PSF2Header* g_font;
+import wolfie::interrupts;
+import wolfie::boot;
+import wolfie::display;
+import wolfie::utils;
+import wolfie::cpu;
+import wolfie::drivers;
+
+display::Tty g_tty;
+display::FrameBuffer g_fb;
+display::PSF2Header* g_font;
 
 fn void kmain(uint magic, uint info) @export("kmain")
 {
-	disable_interrupts();
-	if (magic != MULTIBOOT_BOOT_MAGIC) panic("Invalid magic number!\n");
-	if (info & 7) panic("Multiboot info misaligned!\n");
+	drivers::disable_interrupts();
+	if (magic != boot::MULTIBOOT_BOOT_MAGIC) display::panic("Invalid magic number!\n");
+	if (info & 7) display::panic("Multiboot info misaligned!\n");
 
-	MultibootTag* tag = mb2_find_tag((MultibootHeader*)info, TagType.FRAMEBUFFER);
+	boot::MultibootTag* tag = boot::mb2_find_tag((boot::MultibootHeader*)info, boot::TagType.FRAMEBUFFER);
 	if (tag != null)
 	{
-		FramebufferTag* fbtag = (FramebufferTag*)tag;
-		if (fbtag.type == FramebufferType.RGB)
+		boot::FramebufferTag* fbtag = (boot::FramebufferTag*)tag;
+		if (fbtag.type == boot::FramebufferType.RGB)
 		{
-			g_fb = (FrameBuffer) { (uint*)((usz)fbtag.addr), fbtag.pitch, fbtag.width, fbtag.height, fbtag.bpp };
+			g_fb = (display::FrameBuffer) { (uint*)((usz)fbtag.addr), fbtag.pitch, fbtag.width, fbtag.height, fbtag.bpp };
 
-			g_font = (PSF2Header*)FONT_DATA.ptr;
-			if (g_font.magic != PSF2_MAGIC) panic("Bad font magic!\n");
+			g_font = (display::PSF2Header*)display::FONT_DATA.ptr;
+			if (g_font.magic != display::PSF2_MAGIC) display::panic("Bad font magic!\n");
 
 			g_tty.init(&g_fb, g_font, 0xFFFFFF, 0x000000);
-			console_init_framebuffer();
+			utils::console_init_framebuffer();
 			g_fb.fill(0x001020);
 			g_fb.debug();
 		}
 		else
 		{
-			console_init_vga();
-			klog("[wolfie] framebuffer is not RGB, using VGA text fallback\n");
+			utils::console_init_vga();
+			utils::klog("[wolfie] framebuffer is not RGB, using VGA text fallback\n");
 		}
 	}
 	else
 	{
-		console_init_vga();
-		klog("[wolfie] no framebuffer tag, using VGA text fallback\n");
+		utils::console_init_vga();
+		utils::klog("[wolfie] no framebuffer tag, using VGA text fallback\n");
 	}
 
-	klog("[wolfie] booting...\n");
-	mmap_init(info);
+	utils::klog("[wolfie] booting...\n");
+	boot::mmap_init(info);
 
-	init_gdt();
-	init_idt();
-	init_pic();
-	init_pit();
+	cpu::init_gdt();
+	cpu::init_idt();
+	drivers::init_pic();
 
-	isr_register_exception(0, &divide_by_zero_exception_handler);
-	isr_register_exception(6, &invalid_opcode_exception_handler);
-	isr_register_exception(14, &page_fault_exception_handler);
-	isr_register_exception(20, &virtualization_exception_handler);
-	isr_register_irq(Irq.PIT, &pit_handler);
+	interrupts::isr_register_exception(0, &interrupts::divide_by_zero_exception_handler);
+	interrupts::isr_register_exception(6, &interrupts::invalid_opcode_exception_handler);
+	interrupts::isr_register_exception(14, &interrupts::page_fault_exception_handler);
+	interrupts::isr_register_exception(20, &interrupts::virtualization_exception_handler);
+	interrupts::isr_register_irq(Irq.PIT, &drivers::pit_handler);
 
-	enable_interrupts();
-	klog("[wolfie] ready\n");
+	drivers::enable_interrupts();
+	utils::klog("[wolfie] ready\n");
 
-	while (true)
-	{
-		disable_interrupts();
-		halt();
-	}
+	while (true) drivers::halt();
 }

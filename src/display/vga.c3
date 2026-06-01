@@ -1,4 +1,7 @@
-module wolfie;
+module wolfie::display;
+
+import wolfie::drivers;
+import wolfie::utils;
 
 constdef VGAColor : inline char
 {
@@ -41,25 +44,25 @@ fn void vga_enable_cursor(char cursor_start, char cursor_end)
     if (cursor_start > 15) cursor_start = 15;
     if (cursor_end > 15) cursor_end = 15;
     
-	outportb(0x3D4, 0x0A);
-	outportb(0x3D5, (inportb(0x3D5) & 0xC0) | cursor_start);
+	drivers::outportb(0x3D4, 0x0A);
+	drivers::outportb(0x3D5, (drivers::inportb(0x3D5) & 0xC0) | cursor_start);
 
-	outportb(0x3D4, 0x0B);
-	outportb(0x3D5, (inportb(0x3D5) & 0xE0) | cursor_end);
+	drivers::outportb(0x3D4, 0x0B);
+	drivers::outportb(0x3D5, (drivers::inportb(0x3D5) & 0xE0) | cursor_end);
 }
 
 fn void vga_disable_cursor()
 {
-	outportb(0x3D4, 0x0A);
-	outportb(0x3D5, 0x20);
+	drivers::outportb(0x3D4, 0x0A);
+	drivers::outportb(0x3D5, 0x20);
 }
 
 fn void vga_set_cursor_pos(ushort x, ushort y){
     ushort pos = (ushort)(y * vga_width + x);
-    outportb(0x3D4, 0x0F);
-    outportb(0x3D5, (char)(pos & 0xFF));
-    outportb(0x3D4, 0x0E);
-    outportb(0x3D5, (char)(pos >> 8) & 0xFF);
+    drivers::outportb(0x3D4, 0x0F);
+    drivers::outportb(0x3D5, (char)(pos & 0xFF));
+    drivers::outportb(0x3D4, 0x0E);
+    drivers::outportb(0x3D5, (char)(pos >> 8) & 0xFF);
 }
 
 fn void vga_clear(VGAColor fg, VGAColor bg)
@@ -136,11 +139,11 @@ fn void vga_puthex(uint num)
 }
 
 fn void panic(char* str){
-    if (console_mode == ConsoleMode.VGA) {
+    if (utils::console_mode == ConsoleMode.VGA) {
         vga_clear(RED, BLACK);
     }
-    klog("KERNEL PANIC:\n");
-    klog(str);
-    klog("\n");
-    while(true) halt();
+    utils::klog("KERNEL PANIC:\n");
+    utils::klog(str);
+    utils::klog("\n");
+    while(true) drivers::halt();
 }

@@ -1,4 +1,6 @@
-module wolfie;
+module wolfie::boot;
+
+import wolfie::utils;
 
 const uint MULTIBOOT_BOOT_MAGIC = 0x36d76289;
 
@@ -8,6 +10,8 @@ constdef TagType : inline uint
 	BOOTLOADER_NAME = 2,
 	MMAP_TAG = 6,
 	FRAMEBUFFER = 8,
+	ACPI_OLD_RSDP = 14,
+	ACPI_NEW_RSDP = 15,
 }
 
 struct MultibootTag @packed
@@ -74,7 +78,7 @@ struct FramebufferTag @packed
 
 fn MultibootTag* mb2_find_tag(MultibootHeader* mbi, TagType wanted)
 {
-    uptr start = (uptr)mbi + MultibootHeader.sizeof;   // skip 8-byte fixed header
+    uptr start = (uptr)mbi + MultibootHeader::size;   // skip 8-byte fixed header
     uptr end   = (uptr)mbi + mbi.size;
 
     while (start < end) {
@@ -83,7 +87,7 @@ fn MultibootTag* mb2_find_tag(MultibootHeader* mbi, TagType wanted)
         if (tag.type == (uint)TagType.END) break;
         if (tag.type == (uint)wanted) return tag;
 
-        start += ((uptr)tag.size + 7) & -8;          	// round up to 8-byte boundary
+        start += ((uptr)tag.size + 7) & ~((uptr)7);          	// round up to 8-byte boundary
     }
 
     return null;
@@ -98,42 +102,51 @@ fn void mmap_init(uint mbi)
 
 	if (raw_mmap == null)
 	{
-		klog("[MMAP] no tag!\n");
+		utils::klog("[MMAP] no tag!\n");
 		return;
 	}
 
 	MMAPTag* mmap = (MMAPTag*)raw_mmap;
-	uptr entry = (uptr)mmap + MMAPTag.sizeof;
+	uptr entry = (uptr)mmap + MMAPTag::size;
 	uptr end = (uptr)mmap + (uptr)(mmap.tag.size);
 
-	klog("[MMAP] memory map:\n");
+	utils::klog("[MMAP] memory map:\n");
+
+	if (mmap.entry_size == 0 || mmap.entry_size < MMAPEntry::size)
+	{
+		utils::klog("[MMAP] bad entry size: ");
+		utils::klog_hex(mmap.entry_size);
+		utils::klog("\n");
+		return;
+	}
 
 	while (entry < end)
 	{
 		MMAPEntry* e = (MMAPEntry*)entry;
-		klog("  [");
-		klog_hex((uint)e.base_addr);
-        klog(" - ");
-        klog_hex((uint)(e.base_addr + e.length));
-        klog("] ");
+		ulong region_end = e.base_addr + e.length;
+		utils::klog("  [");
+		utils::klog_hex64(e.base_addr);
+        utils::klog(" - ");
+        utils::klog_hex64(region_end);
+        utils::klog("] ");
 
 		switch (e.type)
 		{
 			case MMAPType.USABLE:
-				klog("USABLE");
+				utils::klog("USABLE");
 			case MMAPType.RESERVED:
-				klog("RESERVED");
+				utils::klog("RESERVED");
 			case MMAPType.ACPI:
-				klog("ACPI");
+				utils::klog("ACPI");
 			case MMAPType.NVS:
-				klog("NVS");
+				utils::klog("NVS");
 			case MMAPType.BAD:
-				klog("BAD");
+				utils::klog("BAD");
 			default:
-				klog("UNKNOWN");
+				utils::klog("UNKNOWN");
 		}
 
-		klog("\n");
+		utils::klog("\n");
 		entry += (uptr)(mmap.entry_size); 
 	}
 }

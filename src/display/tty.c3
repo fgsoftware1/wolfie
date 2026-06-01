@@ -1,4 +1,4 @@
-module wolfie;
+module wolfie::display;
 
 struct Tty
 {
